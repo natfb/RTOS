@@ -1,0 +1,4 @@
+/cmake/*
+/.vscode/
+/_build/
+/out/
