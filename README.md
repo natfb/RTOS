@@ -1,6 +1,8 @@
 
+#todo: add descrição do trabalho
+
 # Passos para criar um projeto
-Clona o repo em uma pasta abre no vs code e siga os passos.
+Clonar o repo em uma pasta, abrir no VSCode e siga os passos.
 
 ## 1 Criar nome do projeto
 Abrir a extensão do mplab no meno lateral esquerdo, clicar em new project(primeiro simbolo ao lado de PROJECTS) e criar um nome.
