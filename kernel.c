@@ -4,7 +4,6 @@
 #include "./header_files/hw.h"
 #include "header_files/mem.h"
 
-
 // Fila de aptos
 ready_queue_t r_queue;
 
@@ -12,44 +11,44 @@ ready_queue_t r_queue;
 void os_delay(uint8_t time)
 {
     DISABLE_ALL_INTERRUPTS();
-    
+
     SAVE_CONTEXT(WAITING);
     r_queue.TASKS[r_queue.pos_task_running].task_delay = time;
     scheduler();
     RESTORE_CONTEXT();
-    
+
     ENABLE_ALL_INTERRUPTS();
 }
 
 void os_create_task(uint8_t id, f_ptr func, uint8_t prior)
 {
     tcb_t new_task;
-    
-    new_task.task_id        = id;
-    new_task.task_delay     = 0;
-    new_task.task_priority  = prior;
-    new_task.task_ptr       = func;
-    new_task.task_state     = READY;
-    
-    new_task.BSR_REG        = 0;
-    new_task.FSR0H_REG      = 0;
-    new_task.FSR0L_REG      = 0;
-    new_task.FSR1H_REG      = 0;
-    new_task.FSR1L_REG      = 0;
-    new_task.FSR2H_REG      = 0;
-    new_task.FSR2L_REG      = 0;
-    new_task.PCLATH_REG     = 0;
-    new_task.PCLATU_REG     = 0;
-    new_task.PRODH_REG      = 0;
-    new_task.PRODL_REG      = 0;
-    new_task.STATUS_REG     = 0;
-    new_task.TABLAT_REG     = 0;
-    new_task.TBLPTRH_REG    = 0;
-    new_task.TBLPTRL_REG    = 0;
-    new_task.TBLPTRU_REG    = 0;
-    new_task.W_REG          = 0;
+
+    new_task.task_id = id;
+    new_task.task_delay = 0;
+    new_task.task_priority = prior;
+    new_task.task_ptr = func;
+    new_task.task_state = READY;
+
+    new_task.BSR_REG = 0;
+    new_task.FSR0H_REG = 0;
+    new_task.FSR0L_REG = 0;
+    new_task.FSR1H_REG = 0;
+    new_task.FSR1L_REG = 0;
+    new_task.FSR2H_REG = 0;
+    new_task.FSR2L_REG = 0;
+    new_task.PCLATH_REG = 0;
+    new_task.PCLATU_REG = 0;
+    new_task.PRODH_REG = 0;
+    new_task.PRODL_REG = 0;
+    new_task.STATUS_REG = 0;
+    new_task.TABLAT_REG = 0;
+    new_task.TBLPTRH_REG = 0;
+    new_task.TBLPTRL_REG = 0;
+    new_task.TBLPTRU_REG = 0;
+    new_task.W_REG = 0;
     new_task.task_stack.stack_size = 0;
-    
+
     // Insere nova tarefa na fila de aptos
     r_queue.TASKS[r_queue.size++] = new_task;
 }
@@ -57,31 +56,31 @@ void os_create_task(uint8_t id, f_ptr func, uint8_t prior)
 void os_yield()
 {
     DISABLE_ALL_INTERRUPTS();
-    
+
     SAVE_CONTEXT(READY);
     scheduler();
-    RESTORE_CONTEXT();            
-    
+    RESTORE_CONTEXT();
+
     ENABLE_ALL_INTERRUPTS();
 }
 
-void os_config() // cria a fila, cria a tarefa idle e chama a funcao de configuracao do usuario
+void os_config()
 {
-    r_queue.size                = 0; // zera a fila de tarefas
-    r_queue.task_running        = &r_queue.TASKS[0];
-    r_queue.pos_task_running    = 0;
+    r_queue.size = 0; // zera a fila de tarefas
+    r_queue.task_running = &r_queue.TASKS[0];
+    r_queue.pos_task_running = 0;
 
     SRAMInitHeap();
-    
+
     // Criar a tarefa idle
-    os_create_task(1, idle, 0); // roda quando nao ha tarefa util pronta
+    os_create_task(1, idle, 0);
     asm("global _idle");
-    
-    config_user();   
+
+    config_user();
 }
 
 void os_start()
-{  
+{
     setup_hardware();
     scheduler();
     RESTORE_CONTEXT();
@@ -91,25 +90,27 @@ void os_start()
 void os_task_change_state(state_t new_state, tcb_t *task_handle)
 {
     DISABLE_ALL_INTERRUPTS();
-    
-    if (task_handle == NULL) {
+
+    if (task_handle == NULL)
+    {
         SAVE_CONTEXT(new_state);
         scheduler();
         RESTORE_CONTEXT();
     }
-    else {
+    else
+    {
         task_handle->task_state = new_state;
     }
-    
+
     ENABLE_ALL_INTERRUPTS();
 }
 
-
-TASK idle() // quando estiver em idle, alternar o pino RC0 
+TASK idle() // quando estiver em idle, alternar o pino RC0
 {
     TRISCbits.RC0 = 0;
-    while (1) {
-        //asm("NOP");
+    while (1)
+    {
+        // asm("NOP");
         PORTCbits.RC0 = ~PORTCbits.RC0;
     }
 }
