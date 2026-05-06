@@ -19,7 +19,7 @@ void config_user()
     asm("global _LED_1, _LED_2, _LED_3");
     
     sem_init(&s, 0);    
-    pipe_init(&p);
+    pipe_init(&p); // fila de comunicacao entre tarefas
 }
 
 TASK acionaMotor()

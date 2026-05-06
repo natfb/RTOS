@@ -2,6 +2,8 @@
 #include "./header_files/scheduler.h"
 #include "./header_files/user.h"
 #include "./header_files/hw.h"
+#include "header_files/mem.h"
+
 
 // Fila de aptos
 ready_queue_t r_queue;
@@ -63,14 +65,16 @@ void os_yield()
     ENABLE_ALL_INTERRUPTS();
 }
 
-void os_config()
+void os_config() // cria a fila, cria a tarefa idle e chama a funcao de configuracao do usuario
 {
-    r_queue.size                = 0;
+    r_queue.size                = 0; // zera a fila de tarefas
     r_queue.task_running        = &r_queue.TASKS[0];
     r_queue.pos_task_running    = 0;
+
+    SRAMInitHeap();
     
     // Criar a tarefa idle
-    os_create_task(1, idle, 0);
+    os_create_task(1, idle, 0); // roda quando nao ha tarefa util pronta
     asm("global _idle");
     
     config_user();   
@@ -101,7 +105,7 @@ void os_task_change_state(state_t new_state, tcb_t *task_handle)
 }
 
 
-TASK idle()
+TASK idle() // quando estiver em idle, alternar o pino RC0 
 {
     TRISCbits.RC0 = 0;
     while (1) {
