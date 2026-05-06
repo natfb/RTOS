@@ -4,8 +4,12 @@
 #include "./header_files/sync.h"
 #include "./header_files/com.h"
 
+
+
 sem_t s;
 pipe_t p;
+mutex_t m;
+
 
 void config_user()
 {
@@ -16,67 +20,46 @@ void config_user()
     ANSELCbits.ANSC6    = 0;
     ANSELCbits.ANSC7    = 0;
     
-    asm("global _LED_1, _LED_2, _LED_3");
-    
+    asm("global _teste_mutex, _teste_mutex2");
+
     sem_init(&s, 0);    
     pipe_init(&p);
+    mutex_init(&m);
 }
 
-TASK acionaMotor()
-{
-    while (1) {
+#define LED_RED          PORTDbits.RD0
+#define LED_GREEN          PORTCbits.RC7
+#define LED_YELLOW          PORTCbits.RC6
+
+TASK teste_mutex() {
+    while(1) {
+        // if (mutex_lock(&m)) {
+        mutex_lock(&m); 
+        LED_RED = 1;       // Indica que a Tarefa A quer usar o recurso
+        LED_GREEN = 1;          // Liga o recurso compartilhado
         
+        os_delay(500);      // Simula um trabalho demorado na seção crítica
+        
+        LED_GREEN = 0;          // Finaliza o uso
+        LED_RED = 0;
+        // }
+        mutex_unlock(&m); 
+        os_delay(100); 
     }
 }
 
-TASK ligaLed()
-{
-    while (1) {
+TASK teste_mutex2() {
+    while(1) {
+        mutex_lock(&m); 
+        LED_YELLOW = 1;       // Indica que a Tarefa A quer usar o recurso
+        LED_GREEN = 1;          // Liga o recurso compartilhado
         
-    }    
-}
-
-TASK apagaLed()
-{
-    while (1) {
+        os_delay(500);      // Simula um trabalho demorado na seção crítica
         
-    }    
-}
-
-TASK LED_1()
-{
-    //char *acionamento = SRAMAlloc(6);
-    char acionamento[] = {'L', 'L', 'D', 'L', 'D', 'D'};
-    uint8_t pos = 0;
-    while (1) {        
-        PORTCbits.RC6 = ~PORTCbits.RC6;
-        pipe_write(&p, acionamento[pos]);
-        pos = (pos + 1) % 6;
-        //os_delay(5);
-    }    
-}
-
-TASK LED_2()
-{
-    while (1) {
-        
-        //sem_post(&controle_leitura);
-        PORTCbits.RC7 = ~PORTCbits.RC7;
-        //sem_post(&s);
-        //os_delay(5);
-    }    
-}
-
-TASK LED_3()
-{
-    char dado;
-    while (1) {
-        pipe_read(&p, &dado);
-        if (dado == 'L')
-            PORTDbits.RD0 = 1;
-        else if (dado == 'D')
-            PORTDbits.RD0 = 0;
-        //os_delay(1);
-        //os_task_change_state(WAITING, NULL);
-    }    
+        LED_GREEN = 0;          // Finaliza o uso
+        LED_YELLOW= 0;
+        // }
+        mutex_unlock(&m);
+        os_delay(100); 
+    }
 }
