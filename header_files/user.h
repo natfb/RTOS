@@ -14,6 +14,8 @@ TASK LED_1(void);
 TASK LED_2(void);
 TASK LED_3(void);
 
+TASK teste_mutex(void);
+TASK teste_mutex2(void);
 
 #endif	/* USER_H */
 
