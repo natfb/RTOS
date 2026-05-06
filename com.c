@@ -1,9 +1,10 @@
 #include "./header_files/com.h"
+#include "./header_files/mem.h"
 
 void pipe_init(pipe_t *p)
 {
-    p->pos_input    = 0;
-    p->pos_output   = 0;
+    p->fila_dados = (char *)SRAMalloc(PIPE_MAX_SIZE);
+    p->pos_output = 0;
     sem_init(&p->s_input, PIPE_MAX_SIZE);
     sem_init(&p->s_output, 0);
 }

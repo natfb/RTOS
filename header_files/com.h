@@ -7,7 +7,7 @@
 
 
 typedef struct pipe {
-    char fila_dados[PIPE_MAX_SIZE];
+    char *fila_dados;
     uint8_t pos_input;
     uint8_t pos_output;
     sem_t s_input;
