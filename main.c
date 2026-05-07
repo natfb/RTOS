@@ -5,16 +5,14 @@
 #include "./header_files/kernel.h"
 #include "./header_files/user.h"
 
+#define _XTAL_FREQ 4000.0
+
 int main()
 {
     os_config();
     
-    //os_create_task(2, acionaMotor, 5);
-    //os_create_task(3, ligaLed, 5);
-    //os_create_task(4, apagaLed, 5);
-    
-    os_create_task(2, teste_mutex, 5);
-    os_create_task(3, teste_mutex2, 5);
+    os_create_task(1, sensor_data_processor, 4);
+    os_create_task(2, read_sensor_data, 5);
    
     os_start();
     
