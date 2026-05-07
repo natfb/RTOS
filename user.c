@@ -1,15 +1,14 @@
 #include "./header_files/user.h"
+#include <pic18f46k22.h>
 #include <xc.h>
-#include "./header_files/kernel.h"
 #include "./header_files/sync.h"
 #include "./header_files/com.h"
-
-
-
-sem_t s;
+#include "./header_files/io.h"
+#include "./header_files/kernel.h"
 pipe_t p;
-mutex_t m;
+sem_t s;
 
+uint8_t CURRENT_TEMPERATURE;
 
 void config_user()
 {
@@ -20,46 +19,55 @@ void config_user()
     ANSELCbits.ANSC6    = 0;
     ANSELCbits.ANSC7    = 0;
     
-    asm("global _teste_mutex, _teste_mutex2");
+    asm("global _read_sensor_data, _sensor_data_processor");
 
-    sem_init(&s, 0);    
+    adc_config();
+    adc_on();
+
     pipe_init(&p);
-    mutex_init(&m);
+    sem_init(&s, 2);
 }
 
-#define LED_RED          PORTDbits.RD0
-#define LED_GREEN          PORTCbits.RC7
-#define LED_YELLOW          PORTCbits.RC6
+TASK read_sensor_data() {
+    // codigo og
+    // uint16_t sensor_data = 0;
 
-TASK teste_mutex() {
+    // while(1) {
+    //     sensor_data = adc_read();
+    //     pipe_write(&p, (char)sensor_data);
+    // }
+
+    // teste sem pipe
+    uint16_t sensor_data = 0;
+    float test_temp = 0;
+
     while(1) {
-        // if (mutex_lock(&m)) {
-        mutex_lock(&m); 
-        LED_RED = 1;       // Indica que a Tarefa A quer usar o recurso
-        LED_GREEN = 1;          // Liga o recurso compartilhado
-        
-        os_delay(500);      // Simula um trabalho demorado na seção crítica
-        
-        LED_GREEN = 0;          // Finaliza o uso
-        LED_RED = 0;
-        // }
-        mutex_unlock(&m); 
-        os_delay(100); 
+        // zsensor_data = adc_read(); 
+
+        test_temp = 45;//(sensor_data * 5.0 / 1023.0) * 100.0;
+
+        if (test_temp > 30.0) {
+            PORTDbits.RD7 = 1;  
+        } else {
+            PORTDbits.RD7 = 0;  
+        }
+
+        os_delay(200); 
     }
 }
 
-TASK teste_mutex2() {
+TASK sensor_data_processor() {
+    // uint16_t sensor_data = 0;
     while(1) {
-        mutex_lock(&m); 
-        LED_YELLOW = 1;       // Indica que a Tarefa A quer usar o recurso
-        LED_GREEN = 1;          // Liga o recurso compartilhado
-        
-        os_delay(500);      // Simula um trabalho demorado na seção crítica
-        
-        LED_GREEN = 0;          // Finaliza o uso
-        LED_YELLOW= 0;
+        // pipe_read(&p, (char *)&sensor_data);
+
+        // CURRENT_TEMPERATURE = (sensor_data * 5.0 / 1023.0) * 100.0;
+
+        // if (CURRENT_TEMPERATURE > 30) {
+        //     sem_post(&s);
+        //     PORTDbits.RD7 = 1;
         // }
-        mutex_unlock(&m);
-        os_delay(100); 
+        os_delay(100);
     }
+
 }
