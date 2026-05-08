@@ -13,6 +13,8 @@ int main()
     
     os_create_task(1, sensor_data_processor, 4);
     os_create_task(2, read_sensor_data, 5);
+    os_create_task(3, Task_Dashboard, 1);
+    // os_create_task(4, Task_Alert, 3);
    
     os_start();
     

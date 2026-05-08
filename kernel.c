@@ -3,6 +3,7 @@
 #include "./header_files/user.h"
 #include "./header_files/hw.h"
 #include "header_files/mem.h"
+#include <stdint.h>
 
 // Fila de aptos
 ready_queue_t r_queue;
@@ -23,6 +24,7 @@ void os_delay(uint8_t time)
 void os_create_task(uint8_t id, f_ptr func, uint8_t prior)
 {
     tcb_t new_task;
+    uint8_t pos = r_queue.size;
 
     new_task.task_id = id;
     new_task.task_delay = 0;

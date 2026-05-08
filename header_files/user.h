@@ -11,5 +11,9 @@ float ler_temperatura(uint16_t dados_adc);
 TASK read_sensor_data(void);
 TASK sensor_data_processor(void);
 
+TASK Task_Dashboard(void);
+//TASK Task_Alert(void);
+//TASK Task_Emergency(void);
+
 #endif	/* USER_H */
 
