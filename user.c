@@ -1,9 +1,11 @@
 #include "./header_files/user.h"
 #include <pic18f46k22.h>
 #include <xc.h>
+
 #include "./header_files/sync.h"
 #include "./header_files/com.h"
 #include "./header_files/io.h"
+#include "./header_files/io_ei.h"
 #include "./header_files/kernel.h"
 #include "./header_files/io_ei.h"
 pipe_t p;
@@ -18,7 +20,7 @@ mutex_t temp_mutex;
 
 #define TEMP_LIMITE_ALERTA 30
 
-void config_user()
+void config_user(void)
 {
     TRISCbits.RC6       = 0;
     TRISCbits.RC7       = 0;

@@ -17,10 +17,10 @@ int main()
     // os_create_task(4, Task_Alert, 3);
    
     os_start();
-    
-    while (1) {
-        
+
+    while (1)
+    {
     }
-    
+
     return 0;
 }
