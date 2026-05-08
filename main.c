@@ -10,15 +10,17 @@
 int main()
 {
     os_config();
-    
-    os_create_task(1, sensor_data_processor, 4);
-    os_create_task(2, read_sensor_data, 5);
-   
+
+    os_create_task(1, task_sensor, 2);
+    os_create_task(3, task_controller, 2);
+    os_create_task(4, task_display, 1);
+    os_create_task(5, task_alarm, 3);
+
     os_start();
-    
-    while (1) {
-        
+
+    while (1)
+    {
     }
-    
+
     return 0;
 }

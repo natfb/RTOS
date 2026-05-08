@@ -29,4 +29,30 @@ uint16_t adc_read(void)
     
     return dados_adc;
 }
+void pwm_config(void)
+{
+    // PWM no RC2/CCP1
+    TRISCbits.RC2 = 0;
+    ANSELCbits.ANSC2 = 0;
 
+    PR2 = 0xFF;
+
+    CCPR1L = 0;
+    CCP1CONbits.DC1B = 0;
+    CCP1CONbits.CCP1M = 0b1100;   // PWM mode
+
+    T2CONbits.T2CKPS = 0b11;      // Prescaler 1:16
+    T2CONbits.TMR2ON = 1;
+}
+void pwm_set_duty(uint16_t duty)
+{
+    if (duty > 1023)
+        duty = 1023;
+
+    CCPR1L = duty >> 2;
+    CCP1CONbits.DC1B = duty & 0x03;
+}
+void pwm_off(void)
+{
+    pwm_set_duty(0);
+}

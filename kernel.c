@@ -53,6 +53,21 @@ void os_create_task(uint8_t id, f_ptr func, uint8_t prior)
     r_queue.TASKS[r_queue.size++] = new_task;
 }
 
+void os_task_exit(void)
+{
+    DISABLE_ALL_INTERRUPTS();
+
+    SAVE_CONTEXT(TERMINATED);
+    scheduler();
+    RESTORE_CONTEXT();
+
+    ENABLE_ALL_INTERRUPTS();
+
+    while (1)
+    {
+    }
+}
+
 void os_yield()
 {
     DISABLE_ALL_INTERRUPTS();

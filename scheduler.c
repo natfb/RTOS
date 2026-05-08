@@ -53,3 +53,45 @@ uint8_t priority_scheduler(void)
 
     return prox;
 }
+
+uint8_t RR_priority_scheduler(void)
+{
+    uint8_t highest_priority = 0;
+    uint8_t found = 0;
+    uint8_t prox;
+
+    // Primeiro descobre a maior prioridade entre tarefas READY.
+    for (uint8_t i = 1; i < r_queue.size; i++)
+    {
+        if (r_queue.TASKS[i].task_state == READY)
+        {
+            if (!found || r_queue.TASKS[i].task_priority > highest_priority)
+            {
+                highest_priority = r_queue.TASKS[i].task_priority;
+                found = 1;
+            }
+        }
+    }
+
+    if (!found)
+        return 0; // idle
+
+    // Depois aplica Round-Robin apenas entre tarefas dessa prioridade.
+    prox = r_queue.pos_task_running;
+
+    for (uint8_t tentativa = 0; tentativa < r_queue.size; tentativa++)
+    {
+        prox = (prox + 1) % r_queue.size;
+
+        if (prox == 0)
+            continue; // evita idle se houver tarefa pronta
+
+        if (r_queue.TASKS[prox].task_state == READY &&
+            r_queue.TASKS[prox].task_priority == highest_priority)
+        {
+            return prox;
+        }
+    }
+
+    return 0;
+}
